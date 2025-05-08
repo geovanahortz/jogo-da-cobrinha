@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Cobrinha</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1d1f2f;
+        }
+        canvas {
+            border: 2px solid #fff;
+        }
+        h1 {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Jogo da Cobrinha</h1>
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const tamanhoBloco = 10;
+    const larguraTela = canvas.width;
+    const alturaTela = canvas.height;
+
+    let x1 = larguraTela / 2;
+    let y1 = alturaTela / 2;
+    let x1Mudar = 0;
+    let y1Mudar = 0;
+
+    let comidaX = gerarPosicaoComida();
+    let comidaY = gerarPosicaoComida();
+
+    let cobrinha = [{ x: x1, y: y1 }];
+    let comprimentoCobrinha = 1;
+    let pontos = 0;
+
+    let jogoAtivo = true;
+
+    document.addEventListener("keydown", mudarDirecao);
+
+    function gerarPosicaoComida() {
+        return Math.floor(Math.random() * (larguraTela / tamanhoBloco)) * tamanhoBloco;
+    }
+
+    function mudarDirecao(event) {
+        if (event.key === "ArrowUp" && y1Mudar === 0) {
+            x1Mudar = 0;
+            y1Mudar = -tamanhoBloco;
+        } else if (event.key === "ArrowDown" && y1Mudar === 0) {
+            x1Mudar = 0;
+            y1Mudar = tamanhoBloco;
+        } else if (event.key === "ArrowLeft" && x1Mudar === 0) {
+            x1Mudar = -tamanhoBloco;
+            y1Mudar = 0;
+        } else if (event.key === "ArrowRight" && x1Mudar === 0) {
+            x1Mudar = tamanhoBloco;
+            y1Mudar = 0;
+        }
+    }
+
+    function desenharCobrinha() {
+        cobrinha.forEach(segmento => {
+            ctx.fillStyle = "green";
+            ctx.fillRect(segmento.x, segmento.y, tamanhoBloco, tamanhoBloco);
+        });
+    }
+
+    function desenharComida() {
+        ctx.fillStyle = "red";
+        ctx.fillRect(comidaX, comidaY, tamanhoBloco, tamanhoBloco);
+    }
+
+    function desenharPontuacao() {
+        ctx.fillStyle = "white";
+        ctx.font = "20px Arial";
+        ctx.fillText("Pontos: " + pontos, 10, 30);
+    }
+
+    function atualizarJogo() {
+        if (!jogoAtivo) return;
+
+        ctx.clearRect(0, 0, larguraTela, alturaTela);
+
+        x1 += x1Mudar;
+        y1 += y1Mudar;
+
+        if (x1 >= larguraTela || x1 < 0 || y1 >= alturaTela || y1 < 0 || colisaoComProprioCorpo()) {
+            jogoAtivo = false;
+            ctx.fillStyle = "white";
+            ctx.font = "30px Arial";
+            ctx.fillText("Você Perdeu! Pressione F5 para reiniciar.", larguraTela / 4, alturaTela / 2);
+            return;
+        }
+
+        cobrinha.unshift({ x: x1, y: y1 });
+
+        if (x1 === comidaX && y1 === comidaY) {
+            pontos += 10;
+            comidaX = gerarPosicaoComida();
+            comidaY = gerarPosicaoComida();
+        } else {
+            cobrinha.pop();
+        }
+
+        desenharCobrinha();
+        desenharComida();
+        desenharPontuacao();
+
+        requestAnimationFrame(atualizarJogo);
+    }
+
+    function colisaoComProprioCorpo() {
+        for (let i = 1; i < cobrinha.length; i++) {
+            if (cobrinha[i].x === x1 && cobrinha[i].y === y1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    atualizarJogo();
+</script>
+
+</body>
+</html>
