@@ -1,0 +1,30 @@
+/* Resetando margens e padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Corpo da página */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #1d1f2f;
+    color: white;
+    text-align: center;
+}
+
+/* Título do jogo */
+h1 {
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+/* Estilos para o canvas */
+canvas {
+    border: 2px solid #fff;
+}
